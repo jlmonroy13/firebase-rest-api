@@ -1,4 +1,5 @@
 import express from 'express';
+import { admin } from 'firebase-admin/lib/auth';
 
 interface CatchErrorProps {
   error: express.ErrorRequestHandler;
@@ -22,3 +23,17 @@ export const evaluateMaxAndMinQuery = (min: string, max: string, value: string) 
   if (onlyHasMax) return value <= max;
   return false;
 };
+
+export const mapUser = (user: admin.auth.UserRecord) => {
+  const customClaims = (user.customClaims || { role: '' }) as { role?: string };
+  const role = customClaims.role ? customClaims.role : '';
+
+  return {
+    uid: user.uid,
+    email: user.email || '',
+    displayName: user.displayName || '',
+    role,
+    lastSignInTime: user.metadata.lastSignInTime,
+    creationTime: user.metadata.creationTime
+  }
+}

@@ -6,7 +6,7 @@ import { catchError, getDocData, evaluateMaxAndMinQuery } from '../../utils';
 const collectionName = 'apartments';
 
 //Create Apartment
-const createApartment: RequestHandler = async (req, res) => {
+export const createApartment: RequestHandler = async (req, res) => {
   try {
     const ref = db.collection(collectionName).doc();
     const apartmentId = ref.id;
@@ -19,7 +19,7 @@ const createApartment: RequestHandler = async (req, res) => {
         id: apartmentId,
       });
 
-    return res.status(200).send();
+    return res.status(201).send();
   } catch (error) {
     return catchError({ error, res });
   }
@@ -40,7 +40,7 @@ const filterApartment = (req: Request, apartment: FirebaseFirestore.DocumentData
 };
 
 //Get Apartments
-const getApartments: RequestHandler = async (req, res) => {
+export const getApartments: RequestHandler = async (req, res) => {
   try {
     const cityIdQuery = req.query.cityId;
     const realtorIdQuery = req.query.realtorId;
@@ -53,7 +53,10 @@ const getApartments: RequestHandler = async (req, res) => {
 
     let document;
     if (cityIdQuery && bedroomsQuery) {
-      document = db.collection(collectionName).where('cityId', '==', cityIdQuery).where('bedrooms', '==', Number(bedroomsQuery));
+      document = db
+        .collection(collectionName)
+        .where('cityId', '==', cityIdQuery)
+        .where('bedrooms', '==', Number(bedroomsQuery));
     } else if (cityIdQuery) {
       document = db.collection(collectionName).where('cityId', '==', cityIdQuery);
     } else if (realtorIdQuery) {
@@ -78,7 +81,7 @@ const getApartments: RequestHandler = async (req, res) => {
 };
 
 //Get Apartment
-const getApartment: RequestHandler = async (req, res) => {
+export const getApartment: RequestHandler = async (req, res) => {
   try {
     const document = db.collection(collectionName).doc(req.params.id);
     const response = await document.get();
@@ -91,7 +94,7 @@ const getApartment: RequestHandler = async (req, res) => {
 };
 
 //Update Apartment
-const updateApartment: RequestHandler = async (req, res) => {
+export const updateApartment: RequestHandler = async (req, res) => {
   try {
     const document = db
       .collection(collectionName)
@@ -101,14 +104,14 @@ const updateApartment: RequestHandler = async (req, res) => {
       ...req.body,
     });
 
-    return res.status(200).send();
+    return res.status(204).send();
   } catch (error) {
     return catchError({ error, res });
   }
 };
 
 //Delete Apartment
-const deleteApartment: RequestHandler = async (req, res) => {
+export const deleteApartment: RequestHandler = async (req, res) => {
   try {
     const document = db
       .collection(collectionName)
@@ -116,16 +119,8 @@ const deleteApartment: RequestHandler = async (req, res) => {
 
     await document.delete();
 
-    return res.status(200).send();
+    return res.status(204).send();
   } catch (error) {
     return catchError({ error, res });
   }
-};
-
-export {
-  createApartment,
-  getApartments,
-  getApartment,
-  updateApartment,
-  deleteApartment,
 };
