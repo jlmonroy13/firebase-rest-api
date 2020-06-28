@@ -51,6 +51,9 @@ export const getApartments: RequestHandler = async (req, res) => {
     const maxSizeQuery = req.query.maxSize;
     const minSizeQuery = req.query.minSize;
 
+    const citiesResponse = await db.collection('cities').get();
+    const cities = citiesResponse.docs.map(getDocData);
+
     let document;
     if (cityIdQuery && bedroomsQuery) {
       document = db
@@ -74,7 +77,12 @@ export const getApartments: RequestHandler = async (req, res) => {
       apartments = apartments.filter((apartment) => filterApartment(req, apartment));
     }
 
-    return res.status(200).send(apartments);
+    const formattedApartment = apartments.map((apartment) => ({
+      ...apartment,
+      city: cities.find((city) => city.id === apartment.cityId)?.name,
+    }));
+
+    return res.status(200).send(formattedApartment);
   } catch (error) {
     return catchError({ error, res });
   }
@@ -83,11 +91,18 @@ export const getApartments: RequestHandler = async (req, res) => {
 //Get Apartment
 export const getApartment: RequestHandler = async (req, res) => {
   try {
+    const citiesResponse = await db.collection('cities').get();
+    const cities = citiesResponse.docs.map(getDocData);
+
     const document = db.collection(collectionName).doc(req.params.id);
     const response = await document.get();
     const apartment = response.data();
+    const formattedApartment = {
+      ...apartment,
+      city: cities.find((city) => city.id === apartment?.cityId)?.name
+    };
 
-    return res.status(200).send(apartment);
+    return res.status(200).send(formattedApartment);
   } catch (error) {
     return catchError({ error, res });
   }
