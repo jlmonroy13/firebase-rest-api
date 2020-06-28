@@ -53,14 +53,10 @@ export const getUser: RequestHandler = async (req, res) => {
 export const updateUser: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params
-    const { displayName, password, email, role } = req.body;
+    const { role } = req.body;
 
-    if (!id || !displayName || !password || !email || !role) {
-      return res.status(400).send({ message: 'Missing fields' })
-    }
-
-    await admin.auth().updateUser(id, { displayName, password, email });
-    await admin.auth().setCustomUserClaims(id, { role });
+    await admin.auth().updateUser(id, { ...req.body });
+    if (role) await admin.auth().setCustomUserClaims(id, { role });
     const user = await admin.auth().getUser(id);
 
     return res.status(200).send(mapUser(user));
