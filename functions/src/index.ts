@@ -10,7 +10,7 @@ import firebaseCredentials from '../firebaseCredentials';
 
 admin.initializeApp({
   credential: admin.credential.cert(firebaseCredentials),
-  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
+  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
 });
 
 const app = express();

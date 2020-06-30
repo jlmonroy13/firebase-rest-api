@@ -3,7 +3,6 @@ import { RequestHandler } from 'express';
 import { db } from '../../index';
 import { getDocData } from '../../utils';
 
-
 const getLocations: RequestHandler = async (req, res) => {
   try {
     const [citiesResponse, countriesResponse] = await Promise.all([
@@ -26,8 +25,6 @@ const getLocations: RequestHandler = async (req, res) => {
   } catch (err) {
     return res.status(500).send({ message: `${err.code} - ${err.message}` });
   }
-}
-
-export {
-  getLocations,
 };
+
+export { getLocations };

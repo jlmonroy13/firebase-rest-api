@@ -10,3 +10,5 @@ node_modules/
 permissions.json
 
 .env
+
+!.eslintrc.js

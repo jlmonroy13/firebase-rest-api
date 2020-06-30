@@ -11,9 +11,15 @@ export const catchError = ({ error, res }: CatchErrorProps) => {
   return res.status(500).send(error);
 };
 
-export const getDocData = (doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>) => doc.data();
+export const getDocData = (
+  doc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>,
+) => doc.data();
 
-export const evaluateMaxAndMinQuery = (min: string, max: string, value: string) => {
+export const evaluateMaxAndMinQuery = (
+  min: string,
+  max: string,
+  value: string,
+) => {
   const hasMinAndMax = !!min && !!max;
   const onlyHasMin = !!min && !max;
   const onlyHasMax = !!max && !min;
@@ -34,6 +40,6 @@ export const mapUser = (user: admin.auth.UserRecord) => {
     displayName: user.displayName || '',
     role,
     lastSignInTime: user.metadata.lastSignInTime,
-    creationTime: user.metadata.creationTime
-  }
-}
+    creationTime: user.metadata.creationTime,
+  };
+};

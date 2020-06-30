@@ -5,7 +5,7 @@ import { catchError, getDocData, evaluateMaxAndMinQuery } from '../../utils';
 
 const collectionName = 'apartments';
 
-//Create Apartment
+// Create Apartment
 export const createApartment: RequestHandler = async (req, res) => {
   try {
     const ref = db.collection(collectionName).doc();
@@ -32,21 +32,33 @@ export const createApartment: RequestHandler = async (req, res) => {
   }
 };
 
-const filterApartment = (req: Request, apartment: FirebaseFirestore.DocumentData) => {
+const filterApartment = (
+  req: Request,
+  apartment: FirebaseFirestore.DocumentData,
+) => {
   const maxPriceQuery: string = req.query.maxPrice as string;
   const minPriceQuery: string = req.query.minPrice as string;
   const maxSizeQuery: string = req.query.maxSize as string;
   const minSizeQuery: string = req.query.minSize as string;
 
-  const matchedPrice = evaluateMaxAndMinQuery(minPriceQuery, maxPriceQuery, apartment.price);
-  const matchedSize = evaluateMaxAndMinQuery(minSizeQuery, maxSizeQuery, apartment.size);
+  const matchedPrice = evaluateMaxAndMinQuery(
+    minPriceQuery,
+    maxPriceQuery,
+    apartment.price,
+  );
+  const matchedSize = evaluateMaxAndMinQuery(
+    minSizeQuery,
+    maxSizeQuery,
+    apartment.size,
+  );
 
-  if ((maxPriceQuery || minPriceQuery) && (maxSizeQuery || minSizeQuery)) return matchedPrice && matchedSize;
+  if ((maxPriceQuery || minPriceQuery) && (maxSizeQuery || minSizeQuery))
+    return matchedPrice && matchedSize;
   if (maxPriceQuery || minPriceQuery) return matchedPrice;
   return matchedSize;
 };
 
-//Get Apartments
+// Get Apartments
 export const getApartments: RequestHandler = async (req, res) => {
   try {
     const cityIdQuery = req.query.cityId;
@@ -68,11 +80,17 @@ export const getApartments: RequestHandler = async (req, res) => {
         .where('cityId', '==', cityIdQuery)
         .where('bedrooms', '==', Number(bedroomsQuery));
     } else if (cityIdQuery) {
-      document = db.collection(collectionName).where('cityId', '==', cityIdQuery);
+      document = db
+        .collection(collectionName)
+        .where('cityId', '==', cityIdQuery);
     } else if (realtorIdQuery) {
-      document = db.collection(collectionName).where('realtorId', '==', realtorIdQuery);
+      document = db
+        .collection(collectionName)
+        .where('realtorId', '==', realtorIdQuery);
     } else if (rentedByQuery) {
-      document = db.collection(collectionName).where('rentedBy', '==', rentedByQuery);
+      document = db
+        .collection(collectionName)
+        .where('rentedBy', '==', rentedByQuery);
     } else {
       document = db.collection(collectionName);
     }
@@ -81,7 +99,9 @@ export const getApartments: RequestHandler = async (req, res) => {
     let apartments = response.docs.map(getDocData);
 
     if (maxPriceQuery || minPriceQuery || maxSizeQuery || minSizeQuery) {
-      apartments = apartments.filter((apartment) => filterApartment(req, apartment));
+      apartments = apartments.filter((apartment) =>
+        filterApartment(req, apartment),
+      );
     }
 
     const formattedApartment = apartments.map((apartment) => ({
@@ -95,7 +115,7 @@ export const getApartments: RequestHandler = async (req, res) => {
   }
 };
 
-//Get Apartment
+// Get Apartment
 export const getApartment: RequestHandler = async (req, res) => {
   try {
     const citiesResponse = await db.collection('cities').get();
@@ -106,7 +126,7 @@ export const getApartment: RequestHandler = async (req, res) => {
     const apartment = response.data();
     const formattedApartment = {
       ...apartment,
-      city: cities.find((city) => city.id === apartment?.cityId)?.name
+      city: cities.find((city) => city.id === apartment?.cityId)?.name,
     };
 
     return res.status(200).send(formattedApartment);
@@ -115,12 +135,10 @@ export const getApartment: RequestHandler = async (req, res) => {
   }
 };
 
-//Update Apartment
+// Update Apartment
 export const updateApartment: RequestHandler = async (req, res) => {
   try {
-    const document = db
-      .collection(collectionName)
-      .doc(req.params.id);
+    const document = db.collection(collectionName).doc(req.params.id);
 
     const citiesResponse = await db.collection('cities').get();
     const cities = citiesResponse.docs.map(getDocData);
@@ -140,12 +158,10 @@ export const updateApartment: RequestHandler = async (req, res) => {
   }
 };
 
-//Delete Apartment
+// Delete Apartment
 export const deleteApartment: RequestHandler = async (req, res) => {
   try {
-    const document = db
-      .collection(collectionName)
-      .doc(req.params.id);
+    const document = db.collection(collectionName).doc(req.params.id);
 
     await document.delete();
 
