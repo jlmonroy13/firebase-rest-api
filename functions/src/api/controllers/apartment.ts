@@ -11,6 +11,9 @@ export const createApartment: RequestHandler = async (req, res) => {
     const ref = db.collection(collectionName).doc();
     const apartmentId = ref.id;
 
+    const citiesResponse = await db.collection('cities').get();
+    const cities = citiesResponse.docs.map(getDocData);
+
     await db
       .collection(collectionName)
       .doc(apartmentId)
@@ -19,7 +22,11 @@ export const createApartment: RequestHandler = async (req, res) => {
         id: apartmentId,
       });
 
-    return res.status(201).send();
+    return res.status(200).send({
+      ...req.body,
+      id: apartmentId,
+      city: cities.find((city) => city.id === req.body?.cityId)?.name,
+    });
   } catch (error) {
     return catchError({ error, res });
   }
@@ -115,11 +122,19 @@ export const updateApartment: RequestHandler = async (req, res) => {
       .collection(collectionName)
       .doc(req.params.id);
 
+    const citiesResponse = await db.collection('cities').get();
+    const cities = citiesResponse.docs.map(getDocData);
+
     await document.update({
       ...req.body,
     });
+    const response = await document.get();
+    const apartment = response.data();
 
-    return res.status(204).send();
+    return res.status(200).send({
+      ...apartment,
+      city: cities.find((city) => city.id === apartment?.cityId)?.name,
+    });
   } catch (error) {
     return catchError({ error, res });
   }
@@ -134,7 +149,7 @@ export const deleteApartment: RequestHandler = async (req, res) => {
 
     await document.delete();
 
-    return res.status(204).send();
+    return res.status(200).send({ id: req.params.id });
   } catch (error) {
     return catchError({ error, res });
   }

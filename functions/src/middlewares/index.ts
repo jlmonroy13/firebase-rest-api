@@ -33,7 +33,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 export const isAuthorized = (opts: { hasRole: Array<'admin' | 'realtor' | 'user'>, allowSameUser?: boolean }) => (req: Request, res: Response, next: Function) => {
   const { role, email, uid } = res.locals;
   const { id } = req.params;
-  console.log('{ role, email, uid }', role, email, uid);
+
   if (email === 'admin@toptal.com') return next();
 
   if (opts.allowSameUser && id && uid === id) return next();

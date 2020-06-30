@@ -71,7 +71,7 @@ export const deleteUser: RequestHandler = async (req, res) => {
     const { id } = req.params
     await admin.auth().deleteUser(id);
 
-    return res.status(204).send();
+    return res.status(200).send({ uid: id });
   } catch (err) {
     return res.status(500).send({ message: `${err.code} - ${err.message}` });
   }

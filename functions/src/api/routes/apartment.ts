@@ -8,14 +8,14 @@ import {
   deleteApartment,
 } from '../controllers/apartment';
 
-// import { isAuthenticated } from '../../middlewares';
+import { isAuthenticated, isAuthorized } from '../../middlewares';
 
 const apartmentRouter = Router();
 
-apartmentRouter.get('/', getApartments);
-apartmentRouter.post('/', createApartment);
-apartmentRouter.get('/:id', getApartment);
-apartmentRouter.put('/:id', updateApartment);
-apartmentRouter.delete('/:id', deleteApartment);
+apartmentRouter.get('/', isAuthenticated, getApartments);
+apartmentRouter.post('/', isAuthenticated, isAuthorized({ hasRole: ['admin', 'realtor'] }), createApartment);
+apartmentRouter.get('/:id', isAuthenticated, getApartment);
+apartmentRouter.put('/:id', isAuthenticated, isAuthorized({ hasRole: ['admin', 'realtor'] }), updateApartment);
+apartmentRouter.delete('/:id', isAuthenticated, isAuthorized({ hasRole: ['admin', 'realtor'] }), deleteApartment);
 
 export default apartmentRouter;
