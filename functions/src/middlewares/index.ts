@@ -37,10 +37,8 @@ export const isAuthorized = (opts: {
   hasRole: Array<'admin' | 'realtor' | 'client'>;
   allowSameUser?: boolean;
 }) => (req: Request, res: Response, next: Function) => {
-  const { role, email, uid } = res.locals;
+  const { role, uid } = res.locals;
   const { id } = req.params;
-
-  if (email === 'admin@toptal.com') return next();
 
   if (opts.allowSameUser && id && uid === id) return next();
 
