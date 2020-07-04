@@ -1,4 +1,5 @@
 import { RequestHandler, Request } from 'express';
+import * as admin from 'firebase-admin';
 
 import { db } from '../../index';
 import { catchError, getDocData, evaluateMaxAndMinQuery } from '../../utils';
@@ -19,6 +20,7 @@ export const createApartment: RequestHandler = async (req, res) => {
       .doc(apartmentId)
       .create({
         ...req.body,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
         id: apartmentId,
       });
 
